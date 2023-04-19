@@ -136,6 +136,10 @@ MAP_MODEL_TO_URL = { # Replace "/" with "-.-" in the model name
     'OpenAssistant/oasst-sft-1-pythia-12b': ModelUrlMap(
         cpp_model_name="gptneox",
         int4_fixed_zero="https://huggingface.co/ayushk4/OpenAssistant-.-oasst-sft-1-pythia-12b/resolve/main/int4_fixed_zero.bin"),
+
+    'stabilityai/stablelm-tuned-alpha-7b': ModelUrlMap(
+        cpp_model_name="gptneox",
+        int4_fixed_zero="https://huggingface.co/cakewalk/ggml-q4_0-stablelm-tuned-alpha-7b/resolve/main/ggml-model-stablelm-tuned-alpha-7b-q4_0.bin"),
 }
 
 class AutoInference:
@@ -191,9 +195,7 @@ class AutoInference:
         assert isinstance(prompt, list), f"Prompt should be a list of integers: {prompt}"
         assert all([isinstance(x, int) for x in prompt]), \
             f"Prompt should be a list of integers {prompt}"
-        # Convert to a string of space separated integers
-        prompt = " ".join([str(x) for x in prompt])
-        
+
         if os.name == 'nt':
             main_file = "./cpp/main.exe"
         else:
@@ -201,7 +203,7 @@ class AutoInference:
             
         command = [main_file, self.cpp_model_name,
                    "-m", self.model_save_path,
-                   "--prompt", prompt,
+                   "--prompt", " ".join([str(x) for x in prompt]),
                    "--seed", str(seed),
                    "--threads", str(n_threads),
                    "--n_predict", str(num_tokens_to_generate),
@@ -210,7 +212,7 @@ class AutoInference:
                    "--temp", str(temperature),
                    "--repeat_last_n", str(repeat_last_n),
                    "--repeat_penalty", str(repeat_penalty)]
-        print(" ".join(command))
+        # print(" ".join(command))
 
         process = Popen(command, stdout=PIPE, stderr=PIPE)
         tokens_ids_so_far = []
@@ -230,8 +232,11 @@ class AutoInference:
                     token_id_buffer = ""
                     tokens_ids_so_far.append(token_id)
                     # Call the streaming output hooks
-                    streaming_token_str_hook(token_str)
-                    streaming_token_ids_hook(token_id)
+                    if len(tokens_ids_so_far) > len(prompt):
+                        if streaming_token_str_hook(token_str) == False:
+                            break
+                        if streaming_token_ids_hook(token_id) == False:
+                            break
                     to_print = token_str
                 else:
                     token_id_buffer += c.decode('utf-8')
@@ -245,7 +250,7 @@ class AutoInference:
                 has_generation_begun = True
 
             # Check if the line is empty or matches the end marker
-            if '<END|>' in all_stdout_so_far:
+            if '<END|>' in all_stdout_so_far or '<|endoftext>' in all_stdout_so_far:
                 if print_streaming_output:
                     print("\n---------------------\n")
                 break

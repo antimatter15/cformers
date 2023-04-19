@@ -29,41 +29,21 @@ Setup
 pip install transformers wget
 git clone https://github.com/nolanoOrg/cformers.git
 cd cformers/cformers/cpp && make && cd ..
-```
 
-Usage:
-```python
-from interface import AutoInference as AI
-ai = AI('EleutherAI/gpt-j-6B')
-x = ai.generate('def parse_html(html_doc):', num_tokens_to_generate=500)
-print(x['token_str'])
-```
-
-OR
-
-```python
-from interface import AutoInference as AI
-ai = AI('OpenAssistant/oasst-sft-1-pythia-12b')
-x = ai.generate("<|prompter|>What's the Earth total population<|endoftext|><|assistant|>", num_tokens_to_generate=100)
-print(x['token_str'])
-```
-OR
-
-```bash
-python chat.py
+python chat.py -m stability
 ```
 chat.py accepts the following parameteres:
 
 - ``` -t 100 ``` Number of tokens to generate 
 - ```-p Tell me a joke``` for a single prompt interaction
-- ```-m pythia``` to load one of the available (bloom, pythia or gptj )
+- ```-m stability``` to load one of the available (bloom, stability, pythia or gptj )
 
 We are working on adding support for `pip install cformers.`
 
 Following Architectures are supported:
 - GPT-J
 - BLOOM
-- GPT-NeoX/Pythia/Open-Assistant/Open-Chat-Kit
+- GPT-NeoX/Pythia/Open-Assistant/Open-Chat-Kit/StableLM
 - CodeGen
 
 Currently following huggingface models are supported:
@@ -80,6 +60,7 @@ Currently following huggingface models are supported:
 - Salesforce/codegen-6B-mono
 - Salesforce/codegen-16B-mono
 - gpt2 (thanks to @[kamalojasv181](https://github.com/kamalojasv181))
+- stabilityai/stablelm-tuned-alpha-7b
 
 We need to quantize and upload remaining models based on the supported architectures on huggingface. We would appreciate your help in this regard.
 
