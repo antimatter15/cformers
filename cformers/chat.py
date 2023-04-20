@@ -46,6 +46,7 @@ if not args.prompt:
             print('—')
             continue
         # print(x['token_str'])
+        print("")
 else:
     my_prompt = ' '.join(args.prompt)
     generate( my_prompt,args)
