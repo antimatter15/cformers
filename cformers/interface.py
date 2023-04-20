@@ -200,6 +200,8 @@ class AutoInference:
             main_file = "./cpp/main.exe"
         else:
             main_file = "./cpp/main"
+
+        # print(prompt)
             
         command = [main_file, self.cpp_model_name,
                    "-m", self.model_save_path,
@@ -262,13 +264,13 @@ class AutoInference:
 
         # print('\n' + '-'*30, all_stdout_so_far, '-'*30 + '\n')
         # return all_stdout_so_far
-        token_line = re.findall(r'<\|BEGIN\>(.*?)<END\|>', all_stdout_so_far, re.DOTALL)[0]
+        # token_line = re.findall(r'<\|BEGIN\>(.*?)<END\|>', all_stdout_so_far, re.DOTALL)[0]
 
         # Convert the token_line to a list of integers
-        all_tokens = [int(x) for x in token_line.split()]
+        # all_tokens = [int(x) for x in token_line.split()]
 
         # Decode the tokens
-        decoded_tokens = self.tokenizer.decode(all_tokens)
+        # decoded_tokens = self.tokenizer.decode(all_tokens)
 
         # Get the exit code
         success = process.wait()
@@ -279,7 +281,5 @@ class AutoInference:
             process.wait()
 
         # Wait for the process to finish and return its exit code
-        return {"success": success,
-                "token_ids": all_tokens,
-                "token_str": decoded_tokens}
+        return {"success": success}
         

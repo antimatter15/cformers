@@ -18,7 +18,7 @@ args = parser.parse_args()
 def generate(prompt,arg=args):
     # print('Model is '+arg.model)
     if arg.model == 'stability':
-        prompt = f"<|USER|>{prompt}<|ASSISTANT|>"
+        prompt = f"<|SYSTEM|> <|USER|>{prompt}<|ASSISTANT|>"
         def hook(text):
             print(text, end='')
             sys.stdout.flush()
@@ -45,7 +45,7 @@ if not args.prompt:
         except KeyboardInterrupt:
             print('—')
             continue
-        print(x['token_str'])
+        # print(x['token_str'])
 else:
     my_prompt = ' '.join(args.prompt)
     generate( my_prompt,args)
